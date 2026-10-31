@@ -8,6 +8,14 @@
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
         @import url('https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap');
 
+        @font-face {
+            font-family: 'GIP';
+            src: url('fonts/GIP-BlackItalic.otf') format('opentype');
+            font-weight: 900;
+            font-style: italic;
+            font-display: swap;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -225,13 +233,13 @@
             margin: 0;
         }
         .footer-logo-text {
-            font-family: 'General Sans', -apple-system, sans-serif;
+            font-family: 'GIP', 'General Sans', -apple-system, sans-serif;
             font-size: 21.9vw;
-            font-weight: 400;
+            font-weight: 900;
+            font-style: italic;
             color: #ffffff;
             letter-spacing: -0.03em;
             margin-right: -0.03em;
-            transform: translateX(-20px);
             line-height: 0.8;
             margin-top: 0;
             margin-bottom: 0;
@@ -352,6 +360,9 @@
             overflow: hidden;
             vertical-align: bottom;
             line-height: 0.8;
+            /* запас под наклон италика, чтобы края букв не обрезались маской */
+            padding: 0.12em 0.15em;
+            margin: -0.12em -0.15em;
         }
         .footer-logo-text .letter-inner {
             display: inline-block;
@@ -413,7 +424,7 @@
     </footer>
 
     <div class="footer-logo-wrap">
-        <h2 class="footer-logo-text">Loopstack</h2>
+        <h2 class="footer-logo-text">Gazed.One</h2>
     </div>
 
     <div class="video-container">
@@ -456,6 +467,22 @@
                     wrapper.appendChild(inner);
                     logoText.appendChild(wrapper);
                 });
+
+                // Подгоняем размер шрифта, чтобы надпись целиком помещалась по ширине экрана
+                const fitLogo = () => {
+                    logoText.style.fontSize = '';
+                    const available = logoText.parentElement.clientWidth - 40; // padding 20px с каждой стороны
+                    const wrappers = logoText.querySelectorAll('.letter-wrapper');
+                    const total = wrappers[wrappers.length - 1].getBoundingClientRect().right
+                                - wrappers[0].getBoundingClientRect().left;
+                    if (total > available) {
+                        logoText.style.fontSize = `${21.9 * available / total}vw`;
+                    }
+                };
+
+                fitLogo();
+                document.fonts.ready.then(fitLogo);
+                window.addEventListener('resize', fitLogo);
             }
 
             // Разделение верхнего заголовка на слова для анимации появления снизу вверх из маски с блюром
